@@ -64,7 +64,7 @@ impl eframe::App for App {
                     let file = task.await;
 
                     if let Some(file) = file {
-                        let _ = sender.send(file.read().await);
+                        sender.send(file.read().await).unwrap();
 
                         // If you care about wasm support you just read() the file
                         // file.read().await; // We don't need to read the file content for this task
