@@ -76,7 +76,12 @@ impl eframe::App for App {
             if let Some(buffer) = &self.picked_file {
                 let device_profile =
                     meshtastic::protobufs::DeviceProfile::decode(buffer.as_slice()).unwrap();
-                ui.label(format!("Device Profile: {:#?}", device_profile));
+                egui::containers::ScrollArea::vertical().show(ui, |ui| {
+                    ui.label(
+                        egui::widget_text::RichText::new(format!("Raw: {:#?}", device_profile))
+                            .monospace(),
+                    );
+                });
             }
 
             /*
