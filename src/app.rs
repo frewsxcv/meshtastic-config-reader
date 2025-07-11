@@ -1,10 +1,9 @@
-use std::path::PathBuf;
 use std::sync::mpsc::{Receiver, Sender, channel};
 
 pub struct TemplateApp {
-    picked_file: Option<PathBuf>,
-    file_picked_sender: Sender<PathBuf>,
-    file_picked_receiver: Receiver<PathBuf>,
+    picked_file: Option<Vec<u8>>,
+    file_picked_sender: Sender<Vec<u8>>,
+    file_picked_receiver: Receiver<Vec<u8>>,
 }
 
 impl Default for TemplateApp {
@@ -65,9 +64,7 @@ impl eframe::App for TemplateApp {
                     let file = task.await;
 
                     if let Some(file) = file {
-                        // If you are on native platform you can just get the path
-                        #[cfg(not(target_arch = "wasm32"))]
-                        let _ = sender.send(file.path().to_path_buf());
+                        let _ = sender.send(file.read().await);
 
                         // If you care about wasm support you just read() the file
                         // file.read().await; // We don't need to read the file content for this task
