@@ -1,12 +1,12 @@
 use std::sync::mpsc::{Receiver, Sender, channel};
 
-pub struct TemplateApp {
+pub struct App {
     picked_file: Option<Vec<u8>>,
     file_picked_sender: Sender<Vec<u8>>,
     file_picked_receiver: Receiver<Vec<u8>>,
 }
 
-impl Default for TemplateApp {
+impl Default for App {
     fn default() -> Self {
         let (file_picked_sender, file_picked_receiver) = channel();
         Self {
@@ -17,14 +17,14 @@ impl Default for TemplateApp {
     }
 }
 
-impl TemplateApp {
+impl App {
     /// Called once before the first frame.
     pub fn new(_cc: &eframe::CreationContext<'_>) -> Self {
         Default::default()
     }
 }
 
-impl eframe::App for TemplateApp {
+impl eframe::App for App {
     /// Called each time the UI needs repainting, which may be many times per second.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         // Receive file path from the channel
