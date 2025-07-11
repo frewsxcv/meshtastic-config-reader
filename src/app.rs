@@ -45,10 +45,18 @@ impl eframe::App for App {
                             ctx.send_viewport_cmd(egui::ViewportCommand::Close);
                         }
                     });
-                    ui.add_space(16.0);
+                    ui.separator();
                 }
 
                 egui::widgets::global_theme_preference_buttons(ui);
+
+                ui.separator();
+
+                if ui.button("Source code").clicked() {
+                    ctx.open_url(egui::OpenUrl::new_tab(
+                        "https://github.com/frewsxcv/meshtastic-config-reader",
+                    ));
+                }
             });
         });
 
