@@ -78,7 +78,7 @@ impl eframe::App for App {
                     meshtastic::protobufs::DeviceProfile::decode(buffer.as_slice()).unwrap();
                 egui::containers::ScrollArea::vertical().show(ui, |ui| {
                     ui.label(
-                        egui::widget_text::RichText::new(format!("Raw: {:#?}", device_profile))
+                        egui::widget_text::RichText::new(format!("{:#?}", device_profile))
                             .monospace(),
                     );
                 });
