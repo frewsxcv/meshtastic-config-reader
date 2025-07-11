@@ -62,6 +62,7 @@ impl eframe::App for App {
 
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.heading("Meshtastic Config Reader");
+            ui.label("This tool reads a Meshtastic config file exported from the Android app and prints the contents.");
 
             if ui.button("Pick file").clicked() {
                 // Open the file dialog to pick a file.
