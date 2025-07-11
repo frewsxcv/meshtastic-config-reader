@@ -1,17 +1,20 @@
+use egui::Context;
 use std::path::PathBuf;
-
-use egui_file_dialog::FileDialog;
+use std::sync::mpsc::{Receiver, Sender, channel};
 
 pub struct TemplateApp {
-    file_dialog: FileDialog,
     picked_file: Option<PathBuf>,
+    file_picked_sender: Sender<PathBuf>,
+    file_picked_receiver: Receiver<PathBuf>,
 }
 
 impl Default for TemplateApp {
     fn default() -> Self {
+        let (file_picked_sender, file_picked_receiver) = channel();
         Self {
-            file_dialog: FileDialog::new(),
             picked_file: None,
+            file_picked_sender,
+            file_picked_receiver,
         }
     }
 }
@@ -26,8 +29,10 @@ impl TemplateApp {
 impl eframe::App for TemplateApp {
     /// Called each time the UI needs repainting, which may be many times per second.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        // Put your widgets into a `SidePanel`, `TopBottomPanel`, `CentralPanel`, `Window` or `Area`.
-        // For inspiration and more examples, go to https://emilk.github.io/egui
+        // Receive file path from the channel
+        if let Ok(path) = self.file_picked_receiver.try_recv() {
+            self.picked_file = Some(path);
+        }
 
         egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
             // The top panel is often a good place for a menu bar:
@@ -53,18 +58,25 @@ impl eframe::App for TemplateApp {
 
             if ui.button("Pick file").clicked() {
                 // Open the file dialog to pick a file.
-                self.file_dialog.pick_file();
+                let task = rfd::AsyncFileDialog::new().pick_file();
+                let sender = self.file_picked_sender.clone();
+
+                // Await somewhere else
+                execute(async move {
+                    let file = task.await;
+
+                    if let Some(file) = file {
+                        // If you are on native platform you can just get the path
+                        #[cfg(not(target_arch = "wasm32"))]
+                        let _ = sender.send(file.path().to_path_buf());
+
+                        // If you care about wasm support you just read() the file
+                        // file.read().await; // We don't need to read the file content for this task
+                    }
+                });
             }
 
             ui.label(format!("Picked file: {:?}", self.picked_file));
-
-            // Update the dialog
-            self.file_dialog.update(ctx);
-
-            // Check if the user picked a file.
-            if let Some(path) = self.file_dialog.take_picked() {
-                self.picked_file = Some(path.clone());
-            }
 
             /*
             // The central panel the region left after adding TopPanel's and SidePanel's
@@ -111,3 +123,12 @@ fn powered_by_egui_and_eframe(ui: &mut egui::Ui) {
     });
 }
 */
+
+#[cfg(not(target_arch = "wasm32"))]
+fn execute<F: Future<Output = ()> + Send + 'static>(f: F) {
+    std::thread::spawn(move || futures::executor::block_on(f));
+}
+#[cfg(target_arch = "wasm32")]
+fn execute<F: Future<Output = ()> + 'static>(f: F) {
+    wasm_bindgen_futures::spawn_local(f);
+}
