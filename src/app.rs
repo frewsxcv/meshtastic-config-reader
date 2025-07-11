@@ -1,3 +1,4 @@
+use meshtastic::Message;
 use std::sync::mpsc::{Receiver, Sender, channel};
 
 pub struct App {
@@ -72,7 +73,11 @@ impl eframe::App for App {
                 });
             }
 
-            ui.label(format!("Picked file: {:?}", self.picked_file));
+            if let Some(buffer) = &self.picked_file {
+                let device_profile =
+                    meshtastic::protobufs::DeviceProfile::decode(buffer.as_slice()).unwrap();
+                ui.label(format!("Device Profile: {:#?}", device_profile));
+            }
 
             /*
             // The central panel the region left after adding TopPanel's and SidePanel's
