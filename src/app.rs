@@ -63,7 +63,7 @@ impl eframe::App for TemplateApp {
 
             // Check if the user picked a file.
             if let Some(path) = self.file_dialog.take_picked() {
-                self.picked_file = Some(path.to_path_buf());
+                self.picked_file = Some(path.clone());
             }
 
             /*
