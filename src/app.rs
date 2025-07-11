@@ -1,4 +1,3 @@
-use egui::Context;
 use std::path::PathBuf;
 use std::sync::mpsc::{Receiver, Sender, channel};
 
