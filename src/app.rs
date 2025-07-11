@@ -82,14 +82,22 @@ impl eframe::App for App {
             }
 
             if let Some(buffer) = &self.picked_file {
-                let device_profile =
-                    meshtastic::protobufs::DeviceProfile::decode(buffer.as_slice()).unwrap();
-                egui::containers::ScrollArea::vertical().show(ui, |ui| {
-                    ui.label(
-                        egui::widget_text::RichText::new(format!("{:#?}", device_profile))
-                            .monospace(),
-                    );
-                });
+                match meshtastic::protobufs::DeviceProfile::decode(buffer.as_slice()) {
+                    Ok(device_profile) => {
+                        egui::containers::ScrollArea::vertical().show(ui, |ui| {
+                            ui.label(
+                                egui::widget_text::RichText::new(format!("{device_profile:#?}"))
+                                    .monospace(),
+                            );
+                        });
+                    }
+                    Err(e) => {
+                        ui.label(
+                            egui::widget_text::RichText::new(format!("Error: {:#?}", e))
+                                .monospace(),
+                        );
+                    }
+                };
             }
         });
     }
