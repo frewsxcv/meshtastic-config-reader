@@ -21,7 +21,7 @@ eframe = { version = "0.32", default-features = false, features = [
 log = "0.4.27"
 rfd = "0.15.3"
 futures = "0.3.31"
-meshtastic = { git = "https://github.com/meshtastic/rust", branch = "main", default-features = false }
+meshtastic = { git = "https://github.com/frewsxcv/meshtastic-rust", branch = "frewsxcv-41DD187B-6E47-448E-A828-25BAD55D27E6", default-features = false }
 
 # native:
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
