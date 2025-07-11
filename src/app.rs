@@ -91,7 +91,7 @@ impl eframe::App for App {
                     }
                     Err(e) => {
                         ui.label(
-                            egui::widget_text::RichText::new(format!("Error: {:#?}", e))
+                            egui::widget_text::RichText::new(format!("Error: {e:#?}"))
                                 .monospace(),
                         );
                     }
